@@ -76,6 +76,8 @@ set(SRC_FILES src/byte_array.cpp
 	src/messages/joint_traj_pt_message.cpp
 	src/messages/robot_status_message.cpp
         src/messages/io_stream_pub_message.cpp
+        src/messages/io_read_request_message.cpp
+        src/messages/io_read_reply_message.cpp
 
 	src/simple_comms_fault_handler.cpp
 )
