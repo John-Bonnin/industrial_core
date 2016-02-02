@@ -6,13 +6,13 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs sensor_msgs
   control_msgs trajectory_msgs simple_message actionlib_msgs actionlib 
   urdf industrial_msgs industrial_utils)
 
-find_package(Boost REQUIRED COMPONENTS system thread)
+find_package(Boost REQUIRED COMPONENTS system thread chrono)
 
 # The definition is copied from the CMakeList for the simple_message package.
 add_definitions(-DROS=1)           #build using ROS libraries
 add_definitions(-DLINUXSOCKETS=1)  #build using LINUX SOCKETS libraries
 
-set(SRC_FILES src/io_input_handler.cpp)
+set(SRC_FILES src/io_input_handler.cpp src/io_read_handler.cpp)
 
 # NOTE: The libraries generated this package are not included in the catkin_package
 # macro because libraries must be explicitly linked in projects that depend on this
@@ -77,7 +77,8 @@ add_executable(industrial_io_node
 target_link_libraries(industrial_io_node 
   industrial_io_client
   simple_message
-  ${catkin_LIBRARIES})
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES})
 
 # The following executables(nodes) are for applications where the robot
 # controller and pc have different same byte order (i.e. byte swapping IS
@@ -88,7 +89,8 @@ add_executable(industrial_io_node_bswap
 target_link_libraries(industrial_io_node_bswap 
   industrial_io_client_bswap 
   simple_message_bswap
-  ${catkin_LIBRARIES})
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES})
   
 install(
     TARGETS industrial_io_client industrial_io_client_bswap

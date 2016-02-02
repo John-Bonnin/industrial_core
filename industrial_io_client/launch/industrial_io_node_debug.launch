@@ -1,0 +1,3 @@
+<launch>
+	<node name="industrial_io_node" pkg="industrial_io_client" type="industrial_io_node" launch-prefix="xterm -e gdb --args" />
+</launch>

@@ -60,20 +60,20 @@ bool IOReadReplyMessage::unload(ByteArray *buffer)
   if (!rtn) return rtn;
   
   industrial::shared_types::shared_int size;
-  rtn &= buffer->unload(size);
+  rtn &= buffer->unloadFront(size);
   if (!rtn) return rtn;
   
   items.resize(size);
   for (int i = 0; i < size; ++i)
   {
     IOReadReplyItem item;
-    rtn &= buffer->unload(item.type);
+    rtn &= buffer->unloadFront(item.type);
     if (!rtn) return rtn;
-    rtn &= buffer->unload(item.index);
+    rtn &= buffer->unloadFront(item.index);
     if (!rtn) return rtn;
-    rtn &= buffer->unload(item.result);
+    rtn &= buffer->unloadFront(item.result);
     if (!rtn) return rtn;
-    rtn &= buffer->unload(item.value);
+    rtn &= buffer->unloadFront(item.value);
     if (!rtn) return rtn;
     
     items[i] = item;
