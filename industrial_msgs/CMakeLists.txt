@@ -15,7 +15,8 @@ add_message_files(
   IOReadRequestItem.msg
   IOReadReplyItem.msg
   IOWriteRequestItem.msg
-  IOWriteReplyItem.msg)
+  IOWriteReplyItem.msg
+  IOInfoReplyItem.msg)
 
 add_service_files(
   FILES
@@ -26,7 +27,8 @@ add_service_files(
   StartMotion.srv
   StopMotion.srv
   IORead.srv
-  IOWrite.srv)
+  IOWrite.srv
+  IOInfo.srv)
 
 generate_messages(
   DEPENDENCIES std_msgs trajectory_msgs

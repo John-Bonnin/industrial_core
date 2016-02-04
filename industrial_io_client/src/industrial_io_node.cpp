@@ -2,6 +2,7 @@
 #include "industrial_io_client/io_input_handler.h"
 #include "industrial_io_client/io_read_handler.h"
 #include "industrial_io_client/io_write_handler.h"
+#include "industrial_io_client/io_info_handler.h"
 #include "simple_message/message_manager.h"
 #include "simple_message/socket/tcp_client.h"
 #include "ros/ros.h"
@@ -28,12 +29,16 @@ int main(int argc, char** argv)
 
   IOWriteHandler writeHandler;
   writeHandler.init(&default_tcp_connection_);
+
+  IOInfoHandler infoHandler;
+  infoHandler.init(&default_tcp_connection_);
   
   MessageManager messageManager;
   messageManager.init(&default_tcp_connection_);
   messageManager.add(&inputHandler);
   messageManager.add(&readHandler);
   messageManager.add(&writeHandler);
+  messageManager.add(&infoHandler);
 
   LOG_INFO("IO Node setup done");
 
