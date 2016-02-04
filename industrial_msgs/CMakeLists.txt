@@ -13,7 +13,9 @@ add_message_files(
   ServiceReturnCode.msg
   TriState.msg
   IOReadRequestItem.msg
-  IOReadReplyItem.msg)
+  IOReadReplyItem.msg
+  IOWriteRequestItem.msg
+  IOWriteReplyItem.msg)
 
 add_service_files(
   FILES
@@ -23,7 +25,8 @@ add_service_files(
   SetRemoteLoggerLevel.srv
   StartMotion.srv
   StopMotion.srv
-  IORead.srv)
+  IORead.srv
+  IOWrite.srv)
 
 generate_messages(
   DEPENDENCIES std_msgs trajectory_msgs
