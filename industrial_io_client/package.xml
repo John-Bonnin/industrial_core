@@ -3,10 +3,10 @@
   <version>0.0.0</version>
   <description>Industrial io client</description>
 
-  <maintainer email="todo@example.com">John Doe</maintainer>
-  <license>???</license>
+  <maintainer email="fzi@fzi.de">FZI Karlsruhe</maintainer>
+  <license>BSD License</license>
   <url type="website"></url>
-  <author></author>
+  <author>FZI Karlsruhe</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
