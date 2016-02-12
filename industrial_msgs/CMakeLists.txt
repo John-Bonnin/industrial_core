@@ -16,7 +16,9 @@ add_message_files(
   IOReadReplyItem.msg
   IOWriteRequestItem.msg
   IOWriteReplyItem.msg
-  IOInfoReplyItem.msg)
+  IOInfoReplyItem.msg
+  IOStreamPubItem.msg
+  IOStreamPub.msg)
 
 add_service_files(
   FILES

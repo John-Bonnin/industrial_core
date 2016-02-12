@@ -12,7 +12,7 @@ find_package(Boost REQUIRED COMPONENTS system thread chrono)
 add_definitions(-DROS=1)           #build using ROS libraries
 add_definitions(-DLINUXSOCKETS=1)  #build using LINUX SOCKETS libraries
 
-set(SRC_FILES src/io_input_handler.cpp src/io_read_handler.cpp src/io_write_handler.cpp src/io_info_handler.cpp)
+set(SRC_FILES src/io_read_handler.cpp src/io_write_handler.cpp src/io_info_handler.cpp src/io_stream_pub_handler.cpp)
 
 # NOTE: The libraries generated this package are not included in the catkin_package
 # macro because libraries must be explicitly linked in projects that depend on this

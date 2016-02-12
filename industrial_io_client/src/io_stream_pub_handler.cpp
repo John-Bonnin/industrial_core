@@ -29,43 +29,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "industrial_io_client/io_input_handler.h"
+#include "industrial_io_client/io_stream_pub_handler.h"
 #include <iostream>
+#include <boost/chrono.hpp>
 
 namespace industrial_io_client
 {
-bool IOInputHandler::internalCB(industrial::simple_message::SimpleMessage& in)
+
+IOStreamPubHandler::IOStreamPubHandler() : IOTopicHandler("stream_pub", industrial::io_stream_pub_message::msg_type)
 {
-  industrial::io_stream_pub_message::IOStreamPubMessage inputMessage;
-  if (!inputMessage.init(in))
+
+}
+
+industrial_msgs::IOStreamPub IOStreamPubHandler::simpleMessageToRosMessage(industrial::io_stream_pub_message::IOStreamPubMessage &input)
+{
+  industrial_msgs::IOStreamPub res;
+  res.timestamp = input.timestamp;
+  res.items.resize(input.items.size());
+  for (int i = 0; i < input.items.size(); ++i)
   {
-    std::cout << "Could not parse input message in io_input_handler" << std::endl;
-    return false;
+    res.items[i].type = input.items[i].type;
+    res.items[i].start = input.items[i].start;
+    res.items[i].values = input.items[i].values;
   }
-  return internalCB(inputMessage);
+  return res;
 }
 
-bool industrial_io_client::IOInputHandler::internalCB(industrial::io_stream_pub_message::IOStreamPubMessage& inputMessage)
-{
-  std::cout << "Got input message in io_input_handler" << std::endl;
-  std::cout << "Timestamp: " << inputMessage.timestamp << std::endl;
-  for (int i = 0; i < inputMessage.items.size(); ++i)
-  {
-    industrial::io_stream_pub_message::IOStreamPubItem& item = inputMessage.items[i];
-    std::cout << "Item: Type: " << item.type << " Start: " << item.start << " Len: " << item.values.size() << std::endl;
-    for (int j = 0; j < item.values.size(); ++j)
-    {
-      industrial::shared_types::shared_int& value = item.values[j];
-      std::cout << "  Value: " << value << std::endl;
-    }
-  }
-
-  return true;
-}
-
-bool IOInputHandler::init(industrial::smpl_msg_connection::SmplMsgConnection* connection)
-{
-  return init(industrial::io_stream_pub_message::msg_type, connection);
-}
 
 }

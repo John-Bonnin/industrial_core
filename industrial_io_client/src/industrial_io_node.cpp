@@ -30,7 +30,7 @@
  */
 
 #include <iostream>
-#include "industrial_io_client/io_input_handler.h"
+#include "industrial_io_client/io_stream_pub_handler.h"
 #include "industrial_io_client/io_read_handler.h"
 #include "industrial_io_client/io_write_handler.h"
 #include "industrial_io_client/io_info_handler.h"
@@ -52,8 +52,8 @@ int main(int argc, char** argv)
   TcpClient default_tcp_connection_;
   default_tcp_connection_.init("127.0.0.1", 11003);
   
-  IOInputHandler inputHandler;
-  inputHandler.init(&default_tcp_connection_);
+  IOStreamPubHandler streamPubHandler;
+  streamPubHandler.init(&default_tcp_connection_);
 
   IOReadHandler readHandler;
   readHandler.init(&default_tcp_connection_);
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
   
   MessageManager messageManager;
   messageManager.init(&default_tcp_connection_);
-  messageManager.add(&inputHandler);
+  messageManager.add(&streamPubHandler);
   messageManager.add(&readHandler);
   messageManager.add(&writeHandler);
   messageManager.add(&infoHandler);
