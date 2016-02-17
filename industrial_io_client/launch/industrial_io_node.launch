@@ -1,0 +1,5 @@
+<launch>
+	<node name="industrial_io_node" pkg="industrial_io_client" type="industrial_io_node" output="screen" >
+		<rosparam command="load" file="$(find industrial_io_client)/etc/subscribe_ranges.yaml" />
+	</node>
+</launch>

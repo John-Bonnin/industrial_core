@@ -34,6 +34,7 @@
 #include "industrial_io_client/io_read_handler.h"
 #include "industrial_io_client/io_write_handler.h"
 #include "industrial_io_client/io_info_handler.h"
+#include "industrial_io_client/io_stream_subscriber.h"
 #include "simple_message/message_manager.h"
 #include "simple_message/socket/tcp_client.h"
 #include "ros/ros.h"
@@ -63,6 +64,10 @@ int main(int argc, char** argv)
 
   IOInfoHandler infoHandler;
   infoHandler.init(&default_tcp_connection_);
+
+  IOStreamSubscriber streamSubscriber;
+  bool streamSubscriptionSent = false;
+  streamSubscriber.init(&default_tcp_connection_);
   
   MessageManager messageManager;
   messageManager.init(&default_tcp_connection_);
@@ -70,6 +75,7 @@ int main(int argc, char** argv)
   messageManager.add(&readHandler);
   messageManager.add(&writeHandler);
   messageManager.add(&infoHandler);
+  messageManager.add(&streamSubscriber);
 
   LOG_INFO("IO Node setup done");
 
@@ -77,6 +83,20 @@ int main(int argc, char** argv)
   
   ros::Rate r(30);
   while(ros::ok()) {
+
+    //Wait for the connection to be established and send subscription
+    if (default_tcp_connection_.isConnected() && !streamSubscriptionSent) {
+      streamSubscriptionSent = true;
+      if (!streamSubscriber.subscribeToRangesFromParameters())
+      {
+        ROS_ERROR("Could not subscribe to io ranges");
+      }
+    }
+    //Resend subscriptions if connection is lost
+    if (!default_tcp_connection_.isConnected()) {
+      streamSubscriptionSent = false;
+    }
+
     ros::spinOnce();
     r.sleep();
   }

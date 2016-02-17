@@ -82,6 +82,8 @@ set(SRC_FILES src/byte_array.cpp
         src/messages/io_write_reply_message.cpp
         src/messages/io_info_request_message.cpp
         src/messages/io_info_reply_message.cpp
+        src/messages/io_stream_sub_request_message.cpp
+        src/messages/io_stream_sub_reply_message.cpp
 
 	src/simple_comms_fault_handler.cpp
 )

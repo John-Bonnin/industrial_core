@@ -1,0 +1,7 @@
+subscribe_ranges:
+  - type: 1
+    start: 0
+    len: 10
+  - type: 2
+    start: 0
+    len: 10
