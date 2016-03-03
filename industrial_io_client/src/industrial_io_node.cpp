@@ -39,6 +39,7 @@
 #include "simple_message/socket/tcp_client.h"
 #include "ros/ros.h"
 #include "boost/thread.hpp"
+#include <string>
 
 using namespace std;
 using namespace industrial_io_client;
@@ -49,9 +50,16 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "industrial_io_node");
   ros::NodeHandle n;
+
+  string robot_ip_address;
+
+  if (!n.getParam("robot_ip_address", robot_ip_address)) {
+      LOG_WARN("Did not get robot_ip_address param. Using 127.0.0.1.");
+      robot_ip_address = "127.0.0.1";
+  }
   
   TcpClient default_tcp_connection_;
-  default_tcp_connection_.init("127.0.0.1", 11003);
+  default_tcp_connection_.init(const_cast<char*>(robot_ip_address.c_str()), 11003);
   
   IOStreamPubHandler streamPubHandler;
   streamPubHandler.init(&default_tcp_connection_);
