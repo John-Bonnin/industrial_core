@@ -1,0 +1,8 @@
+<launch>
+	<node name="door_io" type="binary_io_write_wrapper_node" pkg="industrial_io_client">
+		<param name="io_type" value="8" />
+		<param name="io_index" value="1" />
+		<remap from="on" to="open_door" />
+		<remap from="off" to="close_door" />
+	</node>
+</launch>

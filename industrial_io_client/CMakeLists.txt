@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project(industrial_io_client)
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs sensor_msgs 
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs std_srvs sensor_msgs
   control_msgs trajectory_msgs simple_message actionlib_msgs actionlib 
   urdf industrial_msgs industrial_utils)
 
@@ -20,7 +20,7 @@ set(SRC_FILES src/io_read_handler.cpp src/io_write_handler.cpp src/io_info_handl
 # library definitions (normal - industrial_io_client and byteswapped.
 # industrial_io_client_bswap) are both included (this is bad).
 catkin_package(
-    CATKIN_DEPENDS roscpp std_msgs sensor_msgs control_msgs trajectory_msgs
+    CATKIN_DEPENDS roscpp std_msgs std_srvs sensor_msgs control_msgs trajectory_msgs
       simple_message actionlib_msgs actionlib urdf industrial_msgs
       industrial_utils
     INCLUDE_DIRS include
@@ -91,7 +91,15 @@ target_link_libraries(industrial_io_node_bswap
   simple_message_bswap
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES})
-  
+
+
+## Helper nodes
+add_executable(binary_io_write_wrapper_node src/binary_io_write_wrapper_node.cpp)
+target_link_libraries(binary_io_write_wrapper_node
+  ${catkin_LIBRARIES}
+)
+
+
 install(
     TARGETS industrial_io_client industrial_io_client_bswap
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
