@@ -1,0 +1,8 @@
+<launch>
+	<node name="brightness_io_stream_filter" pkg="industrial_io_client" type="io_stream_filter_node">
+		<param name="io_type" value="3" />
+		<param name="io_index" value="2" />
+		<param name="output_type" value="int" />
+		<remap from="filtered_io" to="brightness" />
+	</node>
+</launch>

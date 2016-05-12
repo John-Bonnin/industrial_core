@@ -99,6 +99,11 @@ target_link_libraries(binary_io_write_wrapper_node
   ${catkin_LIBRARIES}
 )
 
+add_executable(io_stream_filter_node src/io_stream_filter_node.cpp)
+target_link_libraries(io_stream_filter_node 
+  ${catkin_LIBRARIES}
+)
+
 
 install(
     TARGETS industrial_io_client industrial_io_client_bswap
