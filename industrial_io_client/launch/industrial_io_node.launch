@@ -1,8 +1,13 @@
 <launch>
 	<arg name="robot_ip" doc="IP of controller" />
+	<arg name="use_bswap" doc="If true, driver will byte-swap all incoming and outgoing data" />
+
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
-	<node name="industrial_io_node" pkg="industrial_io_client" type="industrial_io_node" output="screen" required="true" >
+	<node unless="$(arg use_bswap)" name="industrial_io_node" pkg="industrial_io_client" type="industrial_io_node" output="screen" required="true" >
+		<rosparam command="load" file="$(find industrial_io_client)/etc/subscribe_ranges.yaml" />
+	</node>
+	<node if="$(arg use_bswap)" name="industrial_io_node" pkg="industrial_io_client" type="industrial_io_node_bswap" output="screen" required="true" >
 		<rosparam command="load" file="$(find industrial_io_client)/etc/subscribe_ranges.yaml" />
 	</node>
 </launch>
