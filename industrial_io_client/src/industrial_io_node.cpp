@@ -57,12 +57,31 @@ int main(int argc, char** argv)
       LOG_WARN("Did not get robot_ip_address param. Using 127.0.0.1.");
       robot_ip_address = "127.0.0.1";
   }
+
+  //Port for all service calls
+  int servicePort;
+  if (!n.getParam("service_port", servicePort)) {
+    LOG_WARN("Did not get service_port param. Using 11003");
+    servicePort = 11003;
+  }
+
+  //Port for the streaming topic coming from the server
+  int streamingPort;
+  if (!n.getParam("streaming_port", streamingPort)) {
+    LOG_WARN("Did not get streaming_port. Using 11003");
+    streamingPort = 11003;
+  }
+
+  bool useSeparateStreamingPort = servicePort != streamingPort;
+  ROS_INFO_STREAM("Use separate streaming port " << useSeparateStreamingPort);
   
   TcpClient default_tcp_connection_;
-  default_tcp_connection_.init(const_cast<char*>(robot_ip_address.c_str()), 11003);
-  
-  IOStreamPubHandler streamPubHandler;
-  streamPubHandler.init(&default_tcp_connection_);
+  default_tcp_connection_.init(const_cast<char*>(robot_ip_address.c_str()), servicePort);
+
+  TcpClient streaming_tcp_connection_;
+  if (useSeparateStreamingPort) {
+    streaming_tcp_connection_.init(const_cast<char*>(robot_ip_address.c_str()), streamingPort);
+  }
 
   IOReadHandler readHandler;
   readHandler.init(&default_tcp_connection_);
@@ -77,17 +96,31 @@ int main(int argc, char** argv)
   bool streamSubscriptionSent = false;
   streamSubscriber.init(&default_tcp_connection_);
   
-  MessageManager messageManager;
-  messageManager.init(&default_tcp_connection_);
-  messageManager.add(&streamPubHandler);
-  messageManager.add(&readHandler);
-  messageManager.add(&writeHandler);
-  messageManager.add(&infoHandler);
-  messageManager.add(&streamSubscriber);
+  MessageManager defaultMessageManager;
+  defaultMessageManager.init(&default_tcp_connection_);
+  defaultMessageManager.add(&readHandler);
+  defaultMessageManager.add(&writeHandler);
+  defaultMessageManager.add(&infoHandler);
+  defaultMessageManager.add(&streamSubscriber);
+
+  MessageManager streamingMessageManager;
+  IOStreamPubHandler streamPubHandler;
+  if (useSeparateStreamingPort) {
+    streamingMessageManager.init(&streaming_tcp_connection_);
+    streamPubHandler.init(&streaming_tcp_connection_);
+    streamingMessageManager.add(&streamPubHandler);
+  } else {
+    streamPubHandler.init(&default_tcp_connection_);
+    defaultMessageManager.add(&streamPubHandler);
+  }
 
   LOG_INFO("IO Node setup done");
 
-  boost::thread managerThread(boost::bind(&MessageManager::spin, &messageManager));
+  boost::thread defaultManagerThread(boost::bind(&MessageManager::spin, &defaultMessageManager));
+  boost::thread streamingManagerThread;
+  if (useSeparateStreamingPort) {
+    streamingManagerThread = boost::thread(boost::bind(&MessageManager::spin, &streamingMessageManager));
+  }
   
   ros::Rate r(30);
   while(ros::ok()) {
