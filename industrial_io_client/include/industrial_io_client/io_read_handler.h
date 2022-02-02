@@ -43,7 +43,7 @@ namespace industrial_io_client
 class IOReadHandler : public IOServiceHandler<industrial_msgs::IORead, industrial::io_read_request_message::IOReadRequestMessage, industrial::io_read_reply_message::IOReadReplyMessage>
 {
 public:
-  IOReadHandler();
+  IOReadHandler(boost::shared_ptr<boost::mutex> sendMutex);
 private:
   virtual industrial::io_read_request_message::IOReadRequestMessage rosRequestToSimpleMessage(industrial_msgs::IORead::Request &req);
   virtual void simpleMessageToRosReply(industrial::io_read_reply_message::IOReadReplyMessage& reply, industrial_msgs::IORead::Response &res_out);

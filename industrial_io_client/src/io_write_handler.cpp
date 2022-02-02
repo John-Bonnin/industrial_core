@@ -37,7 +37,7 @@
 namespace industrial_io_client
 {
 
-IOWriteHandler::IOWriteHandler() : IOServiceHandler("write", industrial::io_write_reply_message::msg_type)
+IOWriteHandler::IOWriteHandler(boost::shared_ptr<boost::mutex> sendMutex) : IOServiceHandler("write", industrial::io_write_reply_message::msg_type, sendMutex)
 {
 
 }

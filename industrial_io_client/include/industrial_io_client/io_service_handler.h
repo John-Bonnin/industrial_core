@@ -34,6 +34,7 @@
 
 #include "simple_message/message_handler.h"
 #include "ros/ros.h"
+#include "boost/shared_ptr.hpp"
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/condition_variable.hpp"
 #include <string>
@@ -65,7 +66,7 @@ public:
   *
   * Both params should be set fixed by the subclass.
   */
- IOServiceHandler(std::string serviceName, int msg_type) : serviceName(serviceName), msg_type(msg_type)
+ IOServiceHandler(std::string serviceName, int msg_type, boost::shared_ptr<boost::mutex> sendMutex) : serviceName(serviceName), msg_type(msg_type), sendMutex(sendMutex)
  {
    message_id_counter = 1; //Has to be larger than zero so that it is different from not intitalized ReplyMessage
  }
@@ -129,7 +130,7 @@ private:
   */
  bool serviceCallback(typename RosServiceType::Request &req, typename RosServiceType::Response &res)
  {
-   ROS_INFO_STREAM(serviceName << " service called");
+   ROS_DEBUG_STREAM(serviceName << " service called");
 
    //Convert ros request to simple message
    SimpleMessageRequestType message = rosRequestToSimpleMessage(req);
@@ -137,20 +138,24 @@ private:
    //Send simple message
    if (!getConnection()->isConnected())
    {
+     ROS_ERROR_STREAM(serviceName << ": Not connected to robot");
      return false;
    }
    industrial::simple_message::SimpleMessage simMess;
    message.toRequest(simMess);
-   getConnection()->sendMsg(simMess);
-   ROS_INFO_STREAM(serviceName << " request message sent");
+   {
+     boost::mutex::scoped_lock socketLock(*sendMutex);
+     getConnection()->sendMsg(simMess);
+   }
+   ROS_DEBUG_STREAM(serviceName << " request message sent");
 
    //Wait for reply
-   boost::mutex::scoped_lock lock(replyMutex);
+   boost::unique_lock<boost::mutex> lock(replyMutex);
    if (newReplyConditionVariable.wait_for(
          lock, boost::chrono::seconds(1),
          boost::bind(&IOServiceHandler::lastReplyMessageHasId, this, message.message_id)))
    {
-     ROS_INFO_STREAM("Got correct reply message id " << lastReplyMessage.message_id);
+     ROS_DEBUG_STREAM("Got correct reply message id " << lastReplyMessage.message_id);
 
      //Convert simple message to ros reply
      simpleMessageToRosReply(lastReplyMessage, res);
@@ -180,10 +185,12 @@ private:
   */
  bool internalCB(SimpleMessageReplyType& inputMessage)
  {
-   ROS_INFO_STREAM("Got input message in " << serviceName << " service handler - id: " << inputMessage.message_id);
-   boost::mutex::scoped_lock lock(replyMutex);
+   ROS_DEBUG_STREAM("Got input message in " << serviceName << " service handler - id: " << inputMessage.message_id);
+   {
+     boost::mutex::scoped_lock lock(replyMutex);
 
-   lastReplyMessage = inputMessage;
+     lastReplyMessage = inputMessage;
+   }
    newReplyConditionVariable.notify_one();
    return true;
  }
@@ -192,8 +199,9 @@ private:
 
  std::string serviceName;
  ros::ServiceServer rosService;
-
+ 
  boost::mutex replyMutex; //! Mutex to protect access to lastReplyMessage
+ boost::shared_ptr<boost::mutex> sendMutex;  //! Mutex to protect async access to shared send buffer
  boost::condition_variable newReplyConditionVariable; //! Condition variable to notify of new reply message
  SimpleMessageReplyType lastReplyMessage;
 

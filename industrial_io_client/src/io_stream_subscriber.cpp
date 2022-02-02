@@ -34,7 +34,7 @@
 #include "simple_message/messages/io_stream_sub_request_message.h"
 #include "XmlRpcException.h"
 
-bool IOStreamSubscriber::subscribeToRangesFromParameters()
+void IOStreamSubscriber::initRangesFromParameters()
 {
   ros::NodeHandle nh("~");
   XmlRpc::XmlRpcValue subscribe_ranges;
@@ -42,11 +42,7 @@ bool IOStreamSubscriber::subscribeToRangesFromParameters()
   if (!nh.getParam("subscribe_ranges", subscribe_ranges))
   {
     ROS_ERROR("Could not load subscribe_ranges parameter");
-    return false;
   }
-
-  industrial::io_stream_sub_request_message::IOStreamSubRequestMessage requestMessage;
-
   try
   {
     ROS_INFO_STREAM("Got " << subscribe_ranges.size() << " io ranges to subscribe to from parameters");
@@ -72,9 +68,12 @@ bool IOStreamSubscriber::subscribeToRangesFromParameters()
   catch (XmlRpc::XmlRpcException& ex)
   {
     ROS_ERROR("subscribe_ranges in invalid format");
-    return false;
   }
 
+}
+
+bool IOStreamSubscriber::subscribeToRanges()
+{
   //Send simple message
   if (!getConnection()->isConnected())
   {
@@ -116,6 +115,7 @@ bool IOStreamSubscriber::subscribeToRangesFromParameters()
 
 bool IOStreamSubscriber::init(industrial::smpl_msg_connection::SmplMsgConnection *connection)
 {
+  initRangesFromParameters();
   return init(industrial::io_stream_sub_request_message::msg_type, connection);
 }
 

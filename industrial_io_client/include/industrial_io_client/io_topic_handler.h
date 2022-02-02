@@ -112,7 +112,7 @@ private:
   */
  bool internalCB(SimpleMessageType& inputMessage)
  {
-   ROS_INFO_STREAM("Got input message in " << topicName << " topic handler");
+   ROS_DEBUG_STREAM("Got input message in " << topicName << " topic handler");
    RosMessageType rosMessage = simpleMessageToRosMessage(inputMessage);
    rosPublisher.publish(rosMessage);
    return true;

@@ -80,7 +80,7 @@ TYPE
 
 
 VAR
-	cfg_				: rosio_cfg_t   -- configuration
+	cfg_ IN SHADOW	: rosio_cfg_t   -- configuration
 	pkt_				: io_pkt_t 
 	sock_				: ssock_t
 	sock_fd_			: FILE           -- file descriptor has to be declared here

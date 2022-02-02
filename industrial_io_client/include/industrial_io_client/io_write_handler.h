@@ -43,7 +43,7 @@ namespace industrial_io_client
 class IOWriteHandler : public IOServiceHandler<industrial_msgs::IOWrite, industrial::io_write_request_message::IOWriteRequestMessage, industrial::io_write_reply_message::IOWriteReplyMessage>
 {
 public:
-  IOWriteHandler();
+  IOWriteHandler(boost::shared_ptr<boost::mutex> sendMutex);
 private:
   virtual industrial::io_write_request_message::IOWriteRequestMessage rosRequestToSimpleMessage(industrial_msgs::IOWrite::Request &req);
   virtual void simpleMessageToRosReply(industrial::io_write_reply_message::IOWriteReplyMessage& reply, industrial_msgs::IOWrite::Response &res_out);

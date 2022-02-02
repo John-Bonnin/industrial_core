@@ -37,7 +37,7 @@
 namespace industrial_io_client
 {
 
-IOReadHandler::IOReadHandler() : IOServiceHandler("read", industrial::io_read_reply_message::msg_type)
+IOReadHandler::IOReadHandler(boost::shared_ptr<boost::mutex> sendMutex) : IOServiceHandler("read", industrial::io_read_reply_message::msg_type, sendMutex)
 {
 
 }

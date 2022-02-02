@@ -38,7 +38,9 @@
 #include "simple_message/message_manager.h"
 #include "simple_message/socket/tcp_client.h"
 #include "ros/ros.h"
+#include "boost/shared_ptr.hpp"
 #include "boost/thread.hpp"
+#include "boost/thread/mutex.hpp"
 #include <string>
 
 using namespace std;
@@ -50,6 +52,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "industrial_io_node");
   ros::NodeHandle n;
+  boost::shared_ptr<boost::mutex> sendMutex = boost::make_shared<boost::mutex>();
 
   string robot_ip_address;
 
@@ -58,43 +61,30 @@ int main(int argc, char** argv)
       robot_ip_address = "127.0.0.1";
   }
 
-  //Port for all service calls
-  int servicePort;
-  if (!n.getParam("service_port", servicePort)) {
-    LOG_WARN("Did not get service_port param. Using 11003");
-    servicePort = 11003;
+  //Port for all io comms
+  int port;
+  if (!n.getParam("io_port", port)) {
+    LOG_WARN("Did not get io_port param. Using 11003");
+    port = 11003;
   }
 
-  //Port for the streaming topic coming from the server
-  int streamingPort;
-  if (!n.getParam("streaming_port", streamingPort)) {
-    LOG_WARN("Did not get streaming_port. Using 11003");
-    streamingPort = 11003;
-  }
-
-  bool useSeparateStreamingPort = servicePort != streamingPort;
-  ROS_INFO_STREAM("Use separate streaming port " << useSeparateStreamingPort);
-  
   TcpClient default_tcp_connection_;
-  default_tcp_connection_.init(const_cast<char*>(robot_ip_address.c_str()), servicePort);
+  default_tcp_connection_.init(const_cast<char*>(robot_ip_address.c_str()), port);
 
-  TcpClient streaming_tcp_connection_;
-  if (useSeparateStreamingPort) {
-    streaming_tcp_connection_.init(const_cast<char*>(robot_ip_address.c_str()), streamingPort);
-  }
-
-  IOReadHandler readHandler;
+  IOReadHandler readHandler(sendMutex);
   readHandler.init(&default_tcp_connection_);
 
-  IOWriteHandler writeHandler;
+  IOWriteHandler writeHandler(sendMutex);
   writeHandler.init(&default_tcp_connection_);
 
-  IOInfoHandler infoHandler;
+  IOInfoHandler infoHandler (sendMutex);
   infoHandler.init(&default_tcp_connection_);
 
   IOStreamSubscriber streamSubscriber;
-  bool streamSubscriptionSent = false;
   streamSubscriber.init(&default_tcp_connection_);
+
+  IOStreamPubHandler streamPubHandler;
+  streamPubHandler.init(&default_tcp_connection_);
   
   MessageManager defaultMessageManager;
   defaultMessageManager.init(&default_tcp_connection_);
@@ -102,40 +92,23 @@ int main(int argc, char** argv)
   defaultMessageManager.add(&writeHandler);
   defaultMessageManager.add(&infoHandler);
   defaultMessageManager.add(&streamSubscriber);
-
-  MessageManager streamingMessageManager;
-  IOStreamPubHandler streamPubHandler;
-  if (useSeparateStreamingPort) {
-    streamingMessageManager.init(&streaming_tcp_connection_);
-    streamPubHandler.init(&streaming_tcp_connection_);
-    streamingMessageManager.add(&streamPubHandler);
-  } else {
-    streamPubHandler.init(&default_tcp_connection_);
-    defaultMessageManager.add(&streamPubHandler);
-  }
+  defaultMessageManager.add(&streamPubHandler);
 
   LOG_INFO("IO Node setup done");
 
   boost::thread defaultManagerThread(boost::bind(&MessageManager::spin, &defaultMessageManager));
-  boost::thread streamingManagerThread;
-  if (useSeparateStreamingPort) {
-    streamingManagerThread = boost::thread(boost::bind(&MessageManager::spin, &streamingMessageManager));
-  }
   
-  ros::Rate r(30);
+  ros::Rate r(10);
   while(ros::ok()) {
 
-    //Wait for the connection to be established and send subscription
-    if (default_tcp_connection_.isConnected() && !streamSubscriptionSent) {
-      streamSubscriptionSent = true;
-      if (!streamSubscriber.subscribeToRangesFromParameters())
-      {
-        ROS_ERROR("Could not subscribe to io ranges");
-      }
-    }
-    //Resend subscriptions if connection is lost
-    if (!default_tcp_connection_.isConnected()) {
-      streamSubscriptionSent = false;
+    //Wait for the connection to be established and start polling for I/O states
+    if (default_tcp_connection_.isConnected())
+    {
+      boost::mutex::scoped_lock lock(*sendMutex);
+      industrial::io_stream_pub_message::IOStreamPubMessage pubMessage;
+      industrial::simple_message::SimpleMessage msg;
+      streamSubscriber.requestMessage.toTopic(msg);
+      default_tcp_connection_.sendMsg(msg);
     }
 
     ros::spinOnce();

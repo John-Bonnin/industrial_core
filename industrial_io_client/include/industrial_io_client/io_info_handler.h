@@ -43,7 +43,7 @@ namespace industrial_io_client
 class IOInfoHandler : public IOServiceHandler<industrial_msgs::IOInfo, industrial::io_info_request_message::IOInfoRequestMessage, industrial::io_info_reply_message::IOInfoReplyMessage>
 {
 public:
-  IOInfoHandler();
+  IOInfoHandler(boost::shared_ptr<boost::mutex> sendMutex);
 private:
   virtual industrial::io_info_request_message::IOInfoRequestMessage rosRequestToSimpleMessage(industrial_msgs::IOInfo::Request &req);
   virtual void simpleMessageToRosReply(industrial::io_info_reply_message::IOInfoReplyMessage& reply, industrial_msgs::IOInfo::Response &res_out);

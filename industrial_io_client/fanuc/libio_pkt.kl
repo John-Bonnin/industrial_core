@@ -31,8 +31,8 @@ PROGRAM libio_pkt
 
 --VAR
 
---data_io_r_					:ARRAY[256] OF INTEGER	-- Array um die eingelesenen  Daten zu überprüfen
---data_io_w_				:ARRAY[256] OF INTEGER	-- Array um die geschriebenen Daten zu überprüfen
+--data_io_r_					:ARRAY[256] OF INTEGER	-- Array to check the read data
+--data_io_w_				:ARRAY[256] OF INTEGER	-- Array to check the written data
 
 
 --------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ VAR
 	stat__  		  			:INTEGER
 	
 	
-	data_io_				:ARRAY[256] OF INTEGER-- Array IO Data 
+	data_io_				:ARRAY[128] OF INTEGER-- Array IO Data 
 	
 	
 	--------------------------------------------
@@ -88,9 +88,9 @@ VAR
 	num_items_			:INTEGER
   	--------------------------------------------
   	--Items
-  	type_    				:INTEGER
-  	start_     			:INTEGER
- 	len_         			:INTEGER
+  	type_    				:ARRAY[16] OF INTEGER
+  	start_     			:ARRAY[16] OF INTEGER
+ 	len_         			:ARRAY[16] OF INTEGER
   	feat_mask_   		:INTEGER
   	index_    			:INTEGER
  	result_   			:INTEGER
@@ -108,9 +108,6 @@ BEGIN
 	ctrlr_ft_mk_			= 0					--ctrlr_feat_mask_
 	timestamp_			= 0	
 	num_items_			= 0	
-  	type_    				= 0	
-  	start_     			= 0	
- 	len_         			= 0	
   	feat_mask_   		= 0	
   	index_    			= 0	
  	result_   			= 0	
@@ -118,50 +115,44 @@ BEGIN
 	length_				= 0
 	
 	
-	--array data_jo_ null setzten
-  	FOR i__= 1 TO 256  DO
+	--set array data_jo_ null
+  	FOR i__= 1 TO 128  DO
   	data_io_[i__]	= 0
   	ENDFOR
   	
 	
 	--
 	--
-	--fd FILE einlesen
+	--read in fd file
 	--
 	--
 	
 	--
-	--Hier lese ich den Header aus dem fd file ein
-	--in das Array
+	--Read header into array
 	
-	--einlesen length_ in das array data_io_
+	--read length_ into the array data_io_
 	READ fd(data_io_[1])
 	stat__ = IO_STATUS(fd)
 	IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+	--data_io_r_[1]=data_io_[1]	
 	
---	data_io_r_[1]=data_io_[1]	
-	
-	--einlesen msg_type_ in das array data_io_
+	--read message type into array
 	READ fd(data_io_[2])
 	stat__ = IO_STATUS(fd)
 	IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-		
---	data_io_r_[2]=data_io_[2]	
+	--data_io_r_[2]=data_io_[2]	
 	
-	--einlesen comm_type_ in das array data_io_
+	--read comm type into array
 	READ fd(data_io_[3])
 	stat__ = IO_STATUS(fd)
 	IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+	--data_io_r_[3]=data_io_[3]	
 	
---	data_io_r_[3]=data_io_[3]	
-	
-	--einlesen  reply_type_ in das array data_io_
+	--read reply type into array
 	READ fd(data_io_[4])
 	stat__ = IO_STATUS(fd)
 	IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-	
---	data_io_r_[4]=data_io_[4]	
-	
+	--data_io_r_[4]=data_io_[4]
 	
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -187,130 +178,130 @@ BEGIN
 				num_items_			=2
 				
 				--Items 
-				start_				=0
-				len_					=8
+				start_[1]				=0
+				len_	[1]				=8
 				feat_mask_			=0--??
 				
 				--
 				--
-				--fd FILE einlesen
+				--fd FILE read in
 				--
 				--
 				
 				--
-				--Sub-Header aus dem fd FILE einlesen
+				--Sub-Header read in from the fd FILE
 				--
 				
-				--einlesen message_id_ in das array data_io_ aus dem fd FILE
+				--read message_id_ into the array data_io_ from the fd FILE
 				READ fd(data_io_[5])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_r_[5]=data_io_[5]	
+				--data_io_r_[5]=data_io_[5]	
 				
 				--
 				--
-				--fd FILE beschreiben
+				--description
 				--
 				--
 				
 				--
-				--Header in das fd FILE schreiben
+				--write header file
 				--
 				
-				--zuvor bestimmen der length_
+				--predetermine length_
 				data_io_[1]=6*4+num_items_*4*4 --(Header + Sub-Header) *4 +num_items_*(Items)*4
 				
-				--schreiben length_ in das fd file				
+				--Write file length			
 				WRITE fd(data_io_[1])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_w_[1]=data_io_[1]
+				--data_io_w_[1]=data_io_[1]
 				
-				--schreiben msg_type_ in das fd file
+				--Write message type
 				WRITE fd(data_io_[2])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_w_[2]=data_io_[2]	
+				--data_io_w_[2]=data_io_[2]	
 				
-				--schreiben comm_type_ in das fd file
-				WRITE fd(RI_CT_SVCRPL)--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+				--Write comm_type_ in  fd file
+				WRITE fd(RI_CT_SVCRPL)--Not read, not in array
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_w_[3]=RI_CT_SVCRPL
+				--data_io_w_[3]=RI_CT_SVCRPL
 				
-				--schreiben reply_type_ in das fd file
-				WRITE fd(RI_RT_SUCC)--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+				--write reply_type_ in fd file
+				WRITE fd(RI_RT_SUCC)--Not read, not in array
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_w_[4]=RI_RT_SUCC
+				--data_io_w_[4]=RI_RT_SUCC
 			
 				--			
-				--Sub-Header in das fd file schreiben
+				--Write sub headers to fd File
 				--
 				
-				--schreiben message_id_ in das fd file   
+				--write message_id_in fd file   
 				WRITE fd(data_io_[5])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_w_[5]=data_io_[5]
+				--data_io_w_[5]=data_io_[5]
 				
-				--schreiben ctrlr_feat_mask_ in das fd file   
+				--write ctrlr_feat_mask in fd file   
 				WRITE fd(ctrlr_ft_mk_)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_w_[6]=ctrlr_ft_mk_
+				--data_io_w_[6]=ctrlr_ft_mk_
 				
-				--schreiben num_items_ in das fd file   
+				--write num_items_ in fd file   
 				WRITE fd(num_items_)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
---				data_io_w_[7]=num_items_
+				--data_io_w_[7]=num_items_
 				
 				--
-				--Items in das fd FILE schreiben
+				--Items in fd file write
 				--				
 				
 				FOR i__ =0 TO (num_items_-1)  DO
 					
 					--Ermöglicht das senden von zwei verschieden type_
-					IF i__ = 0 THEN type_ = io_rdi; ENDIF 
-					IF i__ = 1 THEN type_ = io_rdo; ENDIF
+					IF i__ = 0 THEN type_[1] = io_rdi; ENDIF 
+					IF i__ = 1 THEN type_[1] = io_rdo; ENDIF
 											
-					--schreiben type_ in das fd file
-					WRITE fd(type_)									--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write type_ in fd file
+					WRITE fd(type_[1])									--Not read, not in array
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
---					data_io_w_[i__*4+8]=type_
+					--data_io_w_[i__*4+8]=type_
 					
-					--schreiben start_ in das fd file
-					WRITE fd(start_)									--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write start_ in fd file
+					WRITE fd(start_[1])									--Not read, not in array
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
---					data_io_w_[i__*4+9]=start_
+					--data_io_w_[i__*4+9]=start_
 					
-					--schreiben len_ in das fd file
-					WRITE fd(len_)										--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write len_ in fd file
+					WRITE fd(len_[1])										--Not read, not in array
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
---					data_io_w_[i__*4+10]=len_
+					--data_io_w_[i__*4+10]=len_
 					
-					--schreiben feat_mask_ in das fd file
-					WRITE fd(feat_mask_)								--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write feat_mask_ in fd file
+					WRITE fd(feat_mask_)								--Not read, not in array
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
---					data_io_w_[i__*4+11]=feat_mask_
+					--data_io_w_[i__*4+11]=feat_mask_
 					
 				ENDFOR
 				
@@ -333,16 +324,16 @@ BEGIN
 
 				--
 				--
-				--fd FILE einlesen
+				--fd FILE Read
 				--
 				--
 				
 				
 				--
-				--Sub-Header aus dem fd FILE einlesen
+				--read Sub-Header from FILE
 				--
 				
-				--einlesen message_id_ in das array data_io_ aus dem fd FILE
+				--read message_id_  into the array data_io_ from the fd FILE
 				READ fd(data_io_[5])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
@@ -350,7 +341,7 @@ BEGIN
 --				data_io_r_[5]=data_io_[5]	
 				
 				
-				--einlesen num_items_ in das array data_io_ aus dem fd FILE
+				--read num_items_ into the array data_io_ from the fd FILE
 				READ fd(data_io_[7])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
@@ -358,7 +349,7 @@ BEGIN
 --				data_io_r_[7]=data_io_[7]	
 				
 				--
-				--Buffer prüfen
+				--check Buffer 
 				--
 				
 				--ROUTINE  rpio_chkbuf(fd : FILE; msg_type_:INTEGER; num_items_ : INTEGER) : INTEGER FROM libio_pkt
@@ -366,33 +357,33 @@ BEGIN
 				IF stat__ <> 0 THEN RETURN (-ABS(stat__)); ENDIF
 				
 				--
-				--Items aus dem fd FILE einlesen
+				--read Items from FILE
 				--
 				
-				FOR i__ =0 TO (data_io_[7] -1)  DO -- Von i bis num_items_
+				FOR i__ =0 TO (data_io_[7] -1)  DO -- from i to num_items_
 					
-					--einlesen type_ in das array data_io_ aus dem fd FILE
+					--read type_ into the array data_io_ from the fd FILE
 					READ fd(data_io_[i__*4+8])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
 --					data_io_r_[i__*4+8]=data_io_[i__*4+8]	
 					
-					--einlesen index_ in das array data_io_ aus dem fd FILE
+					--read index_ into the array data_io_ from the fd FILE
 					READ fd(data_io_[i__*4+9])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
 --					data_io_r_[i__*4+9]=data_io_[i__*4+9]	
 				
-					--
-					--Auslesen der Digitalen und Analogen Eingänge
+					-- into the array data_io_ from the fd FILE
+					--Reading out the digital and analog inputs
 					--
 				
 					--GET_PORT_VAL(type_, index_, value_, result_)
 					GET_PORT_VAL(data_io_[i__*4+8], data_io_[i__*4+9], data_io_[i__*4+11], data_io_[i__*4+10] )
 					
-					--Umwandeln in den richtigen Fehlercode
+					--Raise correct error code
 					IF data_io_[i__*4+10] = 1 THEN data_io_[i__*4+10] = 2; 	
 					ENDIF
 					IF data_io_[i__*4+10] = 0 THEN data_io_[i__*4+10] = 1;
@@ -407,40 +398,40 @@ BEGIN
 				
 				--
 				--
-				--fd FILE beschreiben
+				--fd FILE Description
 				--
 				--
 					
 				
 				--
-				--Header in das fd FILE schreiben
+				--Write Header in fd file
 				--
 				
-				--zuvor bestimmen der length_
+				--Predetermine length
 				data_io_[1]=6*4+data_io_[7]*4*4 --(Header + Sub-Header) *4 +num_items_*(Items)*4
 				
-				--schreiben length_ in das fd file
+				--write length_ in fd file
 				WRITE fd(data_io_[1])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
 --				data_io_w_[1]=data_io_[1]
 			
-				--schreiben msg_type_ in das fd FILE
+				--write msg_type_ in fd file
 				WRITE fd(data_io_[2])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
 --				data_io_w_[2]=data_io_[2]
 				
-				--schreiben comm_type_ in das fd FILE
+				--write comm_type_ in fd file
 				WRITE fd(RI_CT_SVCRPL) 
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
 --				data_io_w_[3]=RI_CT_SVCRPL
 				
-				--schreiben reply_type_ in das fd FILE
+				--write reply_type_ in fd file
 				WRITE fd(RI_RT_SUCC)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
@@ -449,29 +440,29 @@ BEGIN
 			
 			
 				--			
-				--Sub-Header in das fd file schreiben
+				--Sub-Header in fd file write
 				--
 				
-				--schreiben message_id_ in das fd FILE   
+				--write message_id_ in fd file   
 				WRITE fd(data_io_[5])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
 --				data_io_w_[5]=data_io_[5]
 				
-				--zuvor bestimmen der Zeit
+				--Determine time
 				GET_TIME(data_io_[6])
-				-- behält nur die unteren16 bits: HH:MM:SS
+				-- Only keep 16 bits: HH:MM:SS
 				data_io_[6] = data_io_[6] AND 65535
 				
-				--schreiben timestamp_ in das fd FILE 
+				--write timestamp_ in fd file 
 				WRITE fd( data_io_[6])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 				
 --				data_io_w_[6]=data_io_[6]
 				
-				--schreiben num_items_in das fd FILE   
+				--write num_items_in fd file   
 				WRITE fd(data_io_[7])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF	
@@ -479,34 +470,34 @@ BEGIN
 --				data_io_w_[7]=data_io_[7]
 					
 				--
-				--Items in das fd FILE schreiben
+				--Items in fd file write
 				--
 			
 									
-				FOR i__ = 0  TO (data_io_[7]-1)  DO -- Von i bis num_items_	
+				FOR i__ = 0  TO (data_io_[7]-1)  DO -- for i to num_items_	
 					
-					--schreiben type_ in das fd FILE   
+					--write type_ in fd file   
 					WRITE fd(data_io_[i__*4+8])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
 --					data_io_w_[i__*4+8]=data_io_[i__*4+8]
 					
-					--schreiben index_ in das fd FILE   
+					--write index_ in fd file   
 					WRITE fd(data_io_[i__*4+9])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
 --					data_io_w_[i__*4+9]=data_io_[i__*4+9]
 					
-					--schreiben result_ in das fd FILE   
+					--write result_ in fd file   
 					WRITE fd(data_io_[i__*4+10])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
 --					data_io_w_[i__*4+10]=data_io_[i__*4+10]
 					
-					--schreiben value_ in das fd FILE   
+					--write value_ in fd file   
 					WRITE fd(data_io_[i__*4+11])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
@@ -531,35 +522,24 @@ BEGIN
 			--
 			
 			CASE (RI_MT_IOWRIT) : -- IO_WRITE
-				
-			
-				
 				--
-				--
-				--fd FILE einlesen
-				--
-				--
-					
-				--
-				--Sub-Header aus dem fd FILE einlesen
+				--read Sub-Header from fd FILE 
 				--
 				
-				--einlesen message_id_ in das array data_io_ aus dem fd FILE
+				--read message_id_  into the array data_io_ from the fd FILE
 				READ fd(data_io_[5])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_r_[5]=data_io_[5]	
 				
---				data_io_r_[5]=data_io_[5]	
-				
-				--einlesen num_items_ in das array data_io_ aus dem fd FILE
+				--read num_items_ into the array data_io_ from the fd FILE
 				READ fd(data_io_[7])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-				
---				data_io_r_[7]=data_io_[7]	
+				--data_io_r_[7]=data_io_[7]	
 				
 				--
-				--Buffer prüfen
+				--Buffer check
 				--
 				
 				--ROUTINE  rpio_chkbuf(fd : FILE; msg_type_:INTEGER; num_items_ : INTEGER) : INTEGER FROM libio_pkt
@@ -567,166 +547,130 @@ BEGIN
 				IF stat__ <> 0 THEN RETURN (-ABS(stat__)); ENDIF
 				
 				--
-				--Items aus dem fd FILE einlesen
+				--read Items from fd FILE
 				--
 				
 
-				FOR i__ =0 TO (data_io_[7]-1)  DO  -- Von i bis num_items_
+				FOR i__ =0 TO (data_io_[7]-1)  DO  -- from i to num_items_
 					
-					
-					--einlesen type_ in das array data_io_ aus dem fd FILE
+					--read type_ into the array data_io_ from the fd FILE
 					READ fd(data_io_[i__*4+8])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+					--data_io_r_[i__*4+8]=data_io_[i__*4+8]	
 					
---					data_io_r_[i__*4+8]=data_io_[i__*4+8]	
-					
-					--einlesen index_ in das array data_io_ aus dem fd FILE
+					--read index_  into the array data_io_ from the fd FILE
 					READ fd(data_io_[i__*4+9])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+					--data_io_r_[i__*3+9]=data_io_[i__*4+9]	
 					
---					data_io_r_[i__*4+9]=data_io_[i__*4+9]	
-					
-					--einlesen value_ aus dem fd FILE
+					--read value_ from fd FILE
 					READ fd(value_)
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-					
---					data_io_r_[i__*4+10]=value_	
+					--data_io_r_[i__*4+10]=value_	
 					
 					
 					--
-					--Beschreiben der Digitalen und Analogen Ausgänge
+					--write the digital and analog outputs
 					--
 					
 					-- SET_PORT_VAL(type_, index_, value_, result_)
-					SET_PORT_VAL(data_io_[i__*4+8], data_io_[i__*4+9], value_,data_io_[i__*4+10])
+					SET_PORT_VAL(data_io_[i__*4+8], data_io_[i__*4+9], value_,data_io_[i__*4+11])
 					
-					--Umwandeln in den richtigen Fehlercode
-					IF data_io_[i__*4+10] = 1 THEN data_io_[i__*4+10] = 2; 	
+					--Set correct error code
+					IF data_io_[i__*4+11] = 1 THEN data_io_[i__*4+11] = 2; 	
 					ENDIF
-					IF data_io_[i__*4+10] = 0 THEN data_io_[i__*4+10] = 1;
+					IF data_io_[i__*4+11] = 0 THEN data_io_[i__*4+11] = 1;
 					ENDIF	
-					
-					
---					data_io_r_[i__*4+10]=data_io_[i__*4+10]	
-						
-					
-					
 				ENDFOR
 					
-					
-					
 				--
-				--
-				--fd FILE beschreiben
-				--
+				--write Header in fd file
 				--
 				
-				
-				--
-				--Header in das fd FILE schreiben
-				--
-				
-				--zuvor bestimmen der length_
+				--Determine length
 				data_io_[1]=6*4+data_io_[7]*3*4 --(Header + Sub-Header) *4 +num_items_*(Items)*4
 				
-				--schreiben length_ in das fd file
+				--write length_ in fd file
 				WRITE fd(data_io_[1])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[1]=data_io_[1]
 				
---				data_io_w_[1]=data_io_[1]
-				
-				--schreiben msg_type_ in das fd FILE
+				--write msg_type_ in fd file
 				WRITE fd(data_io_[2])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-				
---				data_io_w_[2]=data_io_[2]
+				--data_io_w_[2]=data_io_[2]
 
 
-				--schreiben comm_type_ in das fd file
-				WRITE fd(RI_CT_SVCRPL)							--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+				--write comm_type_ in fd file
+				WRITE fd(RI_CT_SVCRPL)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[3]=RI_CT_SVCRPL
 				
---				data_io_w_[3]=RI_CT_SVCRPL
-				
-				--schreiben reply_type_ in das fd FILE
-				WRITE fd(RI_RT_SUCC)							--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+				--write reply_type_ in fd file
+				WRITE fd(RI_RT_SUCC)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-			
---				data_io_w_[4]=RI_RT_SUCC
+				--data_io_w_[4]=RI_RT_SUCC
 			
 				--			
-				--Sub-Header in das fd file schreiben
+				--Sub-Header in fd file write
 				--
 				
 				
-				--schreiben message_id_ in das fd FILE 
+				--write message_id_ in fd file 
 				WRITE fd(data_io_[5])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[5]=data_io_[5]
 				
---				data_io_w_[5]=data_io_[5]
-				
-				--zuvor bestimmen der Zeit
+				--determine the time
 				GET_TIME(data_io_[6])
-				-- behält nur die unteren16 bits: HH:MM:SS
+				-- keep the lower 16 bits: HH:MM:SS
 				data_io_[6] = data_io_[6] AND 65535
 				
-				--schreiben timestamp_ in das fd FILE 
+				--write timestamp_ in fd file 
 				WRITE fd(data_io_[6])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[6]=data_io_[6]
 				
---				data_io_w_[6]=data_io_[6]
-				
-				--schreiben num_items_ in das fd FILE
+				--write num_items_ in fd file
 				WRITE fd(data_io_[7])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-				
---				data_io_w_[7]=data_io_[7]
+				--data_io_w_[7]=data_io_[7]
 			
 				
-				
-				--
-				--Items in das fd FILE schreiben
-				--
-				
-			
-				
-				FOR i__ = 0 TO (data_io_[7]-1)  DO  -- Von i bis num_items_
+				FOR i__ = 0 TO (data_io_[7]-1)  DO  -- for i to num_items_
+
 					
-					
-					--schreiben type_ in das fd FILE
+					--write type_ in fd file
 					WRITE fd(data_io_[i__*4+8])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+					--data_io_w_[i__*4+8]=data_io_[i__*4+8]
 					
---					data_io_w_[i__*4+8]=data_io_[i__*4+8]
-					
-					---schreiben index_ in das fd FILE
+					---write index_ in fd file
 					WRITE fd(data_io_[i__*4+9])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+					--data_io_w_[i__*4+9]=data_io_[i__*4+9]
 					
---					data_io_w_[i__*4+9]=data_io_[i__*4+9]
-					
-					--schreiben result_ in das fd FILE  
-					WRITE fd(data_io_[i__*4+10])
+					--write result_ in fd file  
+					WRITE fd(data_io_[i__*4+11])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-					
---					data_io_w_[i__*4+10]=data_io_[i__*4+10]
+					--data_io_w_[i__*4+11]=data_io_[i__*4+11]
 					
 				ENDFOR
 				
-				WRITE fd(CR)
+				--WRITE fd(CR)
 					
 				RETURN(1)		
 		
@@ -742,153 +686,161 @@ BEGIN
 			--
 			
 			CASE (RI_MT_IOSTSB) : -- IO_STREAM_SUB
-			WRITE TPDISPLAY('Ich war in IO_STREAM_SUB')
-			
+			--WRITE TPDISPLAY('Ich war in IO_STREAM_SUB',CR)
+
+				--read message_id into the array data_io_ (unused)
+				READ fd(data_io_[5])
+				stat__ = IO_STATUS(fd)
+				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_r_[5]=data_io_[5]
+
+				--read num_items into the array data_io_ (unused)
+				READ fd(num_items_)
+				stat__ = IO_STATUS(fd)
+				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_r_[6]=num_items_
 				
-				--Sub-Header
-				num_items_			=8
+				FOR i__ = 1 TO num_items_ DO
+					READ fd(type_[i__])
+					stat__ = IO_STATUS(fd)
+					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+					--data_io_r_[7+ 3*(i__-1)]=type_[i__]
+					
+					READ fd(start_[i__])
+					stat__ = IO_STATUS(fd)
+					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+					--data_io_r_[8+ 3*(i__-1)]=start_[i__]
+
+					READ fd(len_[i__])
+					stat__ = IO_STATUS(fd)
+					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+					--data_io_r_[9+ 3*(i__-1)]=len_[i__]
+				ENDFOR
 				
-				--Items 
-				type_				=io_rdi
-				start_				=0
-				len_				=256
-				
-				
-				
-				
-				--
-				--
-				--fd FILE beschreiben
-				--
-				--
-				
-				--
-				--Header in das fd FILE schreiben
-				--
-				
-				-- noch abändern
-				--zuvor bestimmen der length_
-				data_io_[1]=5*4+data_io_[7]*3*4 --(Header + Sub-Header) *4 +num_items_*(Items)*4
-				
-				--schreiben length_ in das fd file
+				-- calculate output length
+				data_io_[1] = 5*4  -- hdr + sub_hdr
+				FOR i__ = 1 TO num_items_ DO
+					data_io_[1] = data_io_[1] + (3+len_[i__])*4
+				ENDFOR
+
+				--write length_ in fd file
 				WRITE fd(data_io_[1])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[1]=data_io_[1]
 				
---				data_io_w_[1]=data_io_[1]
-				
-				--schreiben msg_type_ in das fd FILE
-				WRITE fd(data_io_[2])
+				--write msg_type_ in fd file
+				WRITE fd(RI_MT_IOSTPB)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[2]=RI_MT_IOSTPB
 				
-				--schreiben comm_type_ in das fd FILE
-				WRITE fd(RI_CT_TOPIC)							--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+				--write comm_type_ in fd file
+				WRITE fd(RI_CT_TOPIC)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[3]=RI_CT_TOPIC
 
-				--schreiben reply_type_ in das fd FILE
-				WRITE fd(RI_RT_SUCC)							--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+				--write reply_type_ in fd file
+				WRITE fd(RI_RT_INVAL)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[4]=RI_RT_INVAL
 			
 				--			
-				--Sub-Header in das fd file schreiben
+				--Sub-Header in fd file write
 				--
 				
-				--zuvor bestimmen der Zeit
+				--determine the time
 				GET_TIME(data_io_[5])
 				-- behält nur die unteren16 bits: HH:MM:SS
 				data_io_[5] = data_io_[5] AND 65535
 				
-				--schreiben timestamp_ in das fd FILE 
+				--write timestamp_ in fd file 
 				WRITE fd(data_io_[5])
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[5]=data_io_[5]
 				
-				--schreiben num_items_ in das fd FILE  
-				WRITE fd(num_items_)								--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+				--write num_items_ in fd file  
+				WRITE fd(num_items_)
 				stat__ = IO_STATUS(fd)
 				IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
+				--data_io_w_[6]=num_items_
 				
 				
 				--
-				--Items in das fd FILE schreiben
+				--Items in fd file write
 				--
 		
-				FOR i__= 0 TO (num_items_-1)  DO
+				FOR i__= 1 TO num_items_  DO
 					
-					--schreiben type_ in das fd FILE
-					WRITE fd(type_)									--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write type_ in fd file
+					WRITE fd(type_[i__])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
-					--schreiben start_ in das fd FILE
-					WRITE fd(start_)									--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write start_ in fd file
+					WRITE fd(start_[i__])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
-					--schreiben len_ in das fd FILE
-					WRITE fd(len_)										--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write len_ in fd file
+					WRITE fd(len_[i__])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-					
+
 					--
-					--Values in das fd FILE schreiben
+					--Values in fd file write
 					--
 					
-					--Hier immer wieder den start_ und die len_ bestimmen
-					
-					FOR j__ = start_ TO len_  DO	
-							
+					--Determine start_ and len_
+					FOR j__ = start_[i__] TO start_[i__]+len_[i__]-1  DO	
 						--
-						--Auslesen der Digitalen und Analogen Eingänge
+						--Reading out the digital and analog inputs
 						--
 					
 						--GET_PORT_VAL(type_, index_, value_, result_)
-						GET_PORT_VAL(type_, j__, value_, result_ )
+						GET_PORT_VAL(type_[i__], j__, value_, result_ )
 					
-						--schreiben value_ in das fd FILE 
-						WRITE fd(value_)									--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+						--write value_ in fd file 
+						WRITE fd(value_)									--Not read, not in array
 						stat__ = IO_STATUS(fd)
 						IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
-							
 					ENDFOR
 				
 				ENDFOR
-				
-				WRITE fd(CR)
 				
 		
 		ELSE:
 		
 			IF data_io_[3] = RI_CT_SVCREQ THEN  	
 				
-					-- noch abändern
-					--zuvor bestimmen der length_
+					-- still change
+                    -- predetermine the length_
 					data_io_[1]=3*4 --(Header ) *4 
 					
-					--schreiben length_ in das fd file
+					--write length_ in fd file
 					WRITE fd(data_io_[1])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 							
-					--schreiben msg_type_ in das fd file
+					--write msg_type_ in fd file
 					WRITE fd(data_io_[2])
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
 	--				data_io_w_[2]=data_io_[2]	
 					
-					--schreiben comm_type_ in das fd file
-					WRITE fd(RI_CT_SVCRPL)--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write comm_type_ in fd file
+					WRITE fd(RI_CT_SVCRPL)--Not read, not in array
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
 	--				data_io_w_[3]=RI_CT_SVCRPL
 					
-					--schreiben reply_type_ in das fd file
-					WRITE fd(RI_RT_FAIL)--wurde nicht ausgelesen daher  steht es auch nicht in dem array
+					--write reply_type_ in fd file
+					WRITE fd(RI_RT_FAIL)--Not read, not in array
 					stat__ = IO_STATUS(fd)
 					IF stat__ <> 0 THEN RETURN (-stat__); ENDIF
 					
@@ -905,7 +857,7 @@ BEGIN
 	
 		
 		--TODO
-		--Fehler abfangen wenn kein case eingetroffen ist
+		--Catch error for no case
 		
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------		
@@ -927,7 +879,7 @@ BEGIN
 
 	bytes_ahd__		=0
 	stat__			=0
-	size__			=0	--Array Größe Request		
+	size__			=0	--Array size request		
 
 	
 
@@ -936,7 +888,7 @@ BEGIN
 					
 			CASE (RI_MT_IOINFO ) :
 			
-			--Brauchen wir nicht weil wir ja keine Items auslesen
+			--We don't need it because we don't read any items
 			
 			CASE (RI_MT_IOREAD ) :
 			
@@ -948,7 +900,7 @@ BEGIN
 	
 			CASE (RI_MT_IOSTSB ) :
 			
-			--Brauchen wir nicht weil wir ja keine Items auslesen
+			--We don't need it because we don't read any items
 	
 	ENDSELECT
 	
@@ -960,7 +912,7 @@ BEGIN
 
 	-- is there enough for a packet?
 	
-	--es reicht doch wenn die size so große ist wie der buffer?????????
+	--it is enough if the size is as large as the buffer?
 	
 		
 	IF (bytes_ahd__ < (size__)) THEN

@@ -77,7 +77,18 @@ void IOStreamPubMessage::init()
 
 bool IOStreamPubMessage::load(ByteArray *buffer)
 {
-  throw std::runtime_error("Not implemented");
+  bool rtn = true;
+  LOG_COMM("Executing io stream sub request message load");
+  rtn &= buffer->load(timestamp);
+  if (!rtn) return rtn;
+  
+  rtn &= buffer->load((industrial::shared_types::shared_int)items.size());
+  if (!rtn) return rtn;
+  
+  if (!items.empty())
+    throw std::runtime_error("Not implemented");
+  
+  return rtn;
 }
 
 bool IOStreamPubMessage::unload(ByteArray *buffer)

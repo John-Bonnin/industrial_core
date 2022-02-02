@@ -37,7 +37,7 @@
 namespace industrial_io_client
 {
 
-IOInfoHandler::IOInfoHandler() : IOServiceHandler("info", industrial::io_info_reply_message::msg_type)
+IOInfoHandler::IOInfoHandler(boost::shared_ptr<boost::mutex> sendMutex) : IOServiceHandler("info", industrial::io_info_reply_message::msg_type, sendMutex)
 {
 
 }

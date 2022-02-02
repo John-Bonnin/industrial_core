@@ -34,6 +34,7 @@
 
 #include "simple_message/smpl_msg_connection.h"
 #include "simple_message/message_handler.h"
+#include "simple_message/messages/io_stream_sub_request_message.h"
 #include "simple_message/messages/io_stream_sub_reply_message.h"
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/condition_variable.hpp"
@@ -43,10 +44,10 @@ class IOStreamSubscriber : public industrial::message_handler::MessageHandler
  // since this class defines a different init(), this helps find the base-class init()
  using industrial::message_handler::MessageHandler::init;
 public:
-  bool subscribeToRangesFromParameters();
+  bool subscribeToRanges();
 
   bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection);
-
+  industrial::io_stream_sub_request_message::IOStreamSubRequestMessage requestMessage;
 private:
 
   /*!
@@ -58,6 +59,8 @@ private:
    * Handles simple messages of the expected type
    */
   bool internalCB(industrial::io_stream_sub_reply_message::IOStreamSubReplyMessage& inputMessage);
+
+  void initRangesFromParameters();
 
   boost::mutex replyMutex; //! Mutex to protect access to lastReplyMessage
   boost::condition_variable newReplyConditionVariable; //! Condition variable to notify of new reply message

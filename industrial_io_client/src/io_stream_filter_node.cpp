@@ -6,7 +6,7 @@ and the output message type (int/bool) via the output_type param.
 */
 
 #include "ros/ros.h"
-#include "industrial_msgs/IOStreamPub.h"
+#include <industrial_msgs/IOStreamPub.h>
 #include "std_msgs/Int32.h"
 #include "std_msgs/Bool.h"
 

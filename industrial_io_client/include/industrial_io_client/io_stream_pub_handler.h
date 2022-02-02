@@ -43,6 +43,7 @@ class IOStreamPubHandler : public IOTopicHandler<industrial_msgs::IOStreamPub, i
 {
 public:
   IOStreamPubHandler();
+
 protected:
   virtual industrial_msgs::IOStreamPub simpleMessageToRosMessage(industrial::io_stream_pub_message::IOStreamPubMessage &input);
 };
