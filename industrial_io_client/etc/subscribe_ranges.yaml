@@ -4,16 +4,25 @@ subscribe_ranges:
     len: 48
   - type: 2  # Digital Outputs
     start: 1
-    len: 32
-  # - type: 3  # Analog Inputs
-  #   start: 1
-  #   len: 4
-  # - type: 4  # Analog Outputs
-  #   start: 1
-  #   len: 2
-  # - type: 20  # UOP Inputs
-  #   start: 1
-  #   len: 18
-  # - type: 21  # UOP Outputs
-  #   start: 1
-  #   len: 20
+    len: 51
+  - type: 3  # Analog Inputs
+    start: 1
+    len: 4
+  - type: 4  # Analog Outputs
+    start: 1
+    len: 4
+  - type: 8  # Robot Inputs
+    start: 1
+    len: 8
+  - type: 9  # Robot Outputs
+    start: 1
+    len: 8
+  - type: 20  # UOP Inputs
+    start: 1
+    len: 18
+  - type: 21  # UOP Outputs
+    start: 1
+    len: 20
+  - type: 35  # Flags
+    start: 1
+    len: 20

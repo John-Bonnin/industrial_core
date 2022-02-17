@@ -1,0 +1,532 @@
+IO_Lookup
+  - "HD1_MTR_TEMP_OK":
+    type: 1
+    index: 1
+  - name: HD1_BELT_BROKEN
+  type: 1
+  index: 2
+  - name: HD1_JOG_BELT
+  type: 1
+  index: 3
+  - name: HD1_MTR_OVERLOAD
+  type: 1
+  index: 4
+  - name:
+  type: 1
+  index: 5
+  - name:
+  type: 1
+  index: 6
+  - name:
+  type: 1
+  index: 7
+  - name: HD2_BELT_BROKEN
+  type: 1
+  index: 8
+  - name: HD2_MTR_TEMP_OK
+  type: 1
+  index: 9
+  - name: HD2_MTR_OVERLOAD
+  type: 1
+  index: 10
+  - name: HD2_JOG_BELT
+  type: 1
+  index: 11
+  - name:
+  type: 1
+  index: 12
+  - name: DUST_COLLECTOR
+  type: 1
+  index: 13
+  - name:
+  type: 1
+  index: 14
+  - name:
+  type: 1
+  index: 15
+  - name:
+  type: 1
+  index: 16
+  - name:
+  type: 1
+  index: 17
+  - name:
+  type: 1
+  index: 18
+  - name:
+  type: 1
+  index: 19
+  - name: SAFETY_MATS_OK
+  type: 1
+  index: 20
+  - name: TURNTABLE_AT__A
+  type: 1
+  index: 21
+  - name: TURNTABLE_AT__B
+  type: 1
+  index: 22
+  - name: ARM_BACK_SWITCH
+  type: 1
+  index: 23
+  - name:
+  type: 1
+  index: 24
+  - name:
+  type: 1
+  index: 25
+  - name: UNLOCK_TABLE_PB
+  type: 1
+  index: 26
+  - name: CYCLE_START
+  type: 1
+  index: 27
+  - name: TURNTABLE_SAFETY
+  type: 1
+  index: 28
+  - name:
+  type: 1
+  index: 29
+  - name: PART_PRESENT
+  type: 1
+  index: 30
+  - name: HD1_BELT_MIST_ON
+  type: 1
+  index: 31
+  - name: HD2_BELT_MIST_ON
+  type: 1
+  index: 32
+  - name: DOORS_CLOSED
+  type: 1
+  index: 33
+  - name: E_STOP
+  type: 1
+  index: 34
+  - name: CRM_ON
+  type: 1
+  index: 35
+  - name: AIR_OK
+  type: 1
+  index: 36
+  - name: DRIVE_AT_SPEED
+  type: 1
+  index: 37
+  - name: DRIVE_FAULTED
+  type: 1
+  index: 38
+  - name:
+  type: 1
+  index: 39
+  - name: PHOTOEYE_1
+  type: 1
+  index: 40
+  - name: PHOTOEYE_2
+  type: 1
+  index: 41
+  - name: PHOTOEYE_3
+  type: 1
+  index: 42
+  - name: MIST_LOW_LEVEL
+  type: 1
+  index: 43
+  - name:
+  type: 1
+  index: 44
+  - name:
+  type: 1
+  index: 45
+  - name:
+  type: 1
+  index: 46
+  - name:
+  type: 1
+  index: 47
+  - name: MAINT__MODE_ON
+  type: 1
+  index: 48
+  - name: HD1_TIP_UP
+  type: 2
+  index: 1
+  - name: HD1_TIP_DOWN
+  type: 2
+  index: 2
+  - name: HD1_RUN_MOTOR
+  type: 2
+  index: 3
+  - name:
+  type: 2
+  index: 4
+  - name:
+  type: 2
+  index: 5
+  - name: HD1_BELT_MISTOR
+  type: 2
+  index: 6
+  - name: HD2_RUN_MOTOR
+  type: 2
+  index: 7
+  - name:
+  type: 2
+  index: 8
+  - name: HD2_TIP_UP
+  type: 2
+  index: 9
+  - name: HD2_TIP_DOWN
+  type: 2
+  index: 10
+  - name:
+  type: 2
+  index: 11
+  - name: HD2_BELT_MISTOR
+  type: 2
+  index: 12
+  - name:
+  type: 2
+  index: 13
+  - name:
+  type: 2
+  index: 14
+  - name:
+  type: 2
+  index: 15
+  - name:
+  type: 2
+  index: 16
+  - name: RUN_MTR_FORWARD
+  type: 2
+  index: 17
+  - name: CLEAR_FAULT
+  type: 2
+  index: 18
+  - name: RUN_MTR_REVERSE
+  type: 2
+  index: 19
+  - name: INDEX_LOCK
+  type: 2
+  index: 20
+  - name: INDEX_UNLOCK
+  type: 2
+  index: 21
+  - name:
+  type: 2
+  index: 22
+  - name:
+  type: 2
+  index: 23
+  - name:
+  type: 2
+  index: 24
+  - name: CYCLE_PB__LIGHT
+  type: 2
+  index: 25
+  - name: SOUND_ALARM
+  type: 2
+  index: 26
+  - name: MACHINE_IN_CYCLE
+  type: 2
+  index: 27
+  - name: MACHINE_FAULT
+  type: 2
+  index: 28
+  - name: WATING_FOR_PART
+  type: 2
+  index: 29
+  - name: HEAD1DAMP
+  type: 2
+  index: 30
+  - name: HEAD2DAMP
+  type: 2
+  index: 31
+  - name:
+  type: 2
+  index: 32
+  - name: *IMSTP
+  type: 2
+  index: 33
+  - name: *Hold
+  type: 2
+  index: 34
+  - name: *SFSPD
+  type: 2
+  index: 35
+  - name: Cycle_stop
+  type: 2
+  index: 36
+  - name: Fault_reset
+  type: 2
+  index: 37
+  - name: Start
+  type: 2
+  index: 38
+  - name: Home
+  type: 2
+  index: 39
+  - name: Enable
+  type: 2
+  index: 40
+  - name: RSR1/PNS1/STYLE1
+  type: 2
+  index: 41
+  - name: RSR2/PNS2/STYLE2
+  type: 2
+  index: 42
+  - name: RSR3/PNS3/STYLE3
+  type: 2
+  index: 43
+  - name: RSR4/PNS4/STYLE4
+  type: 2
+  index: 44
+  - name: RSR5/PNS5/STYLE5
+  type: 2
+  index: 45
+  - name: RSR6/PNS6/STYLE6
+  type: 2
+  index: 46
+  - name: RSR7/PNS7/STYLE7
+  type: 2
+  index: 47
+  - name: RSR8/PNS8/STYLE8
+  type: 2
+  index: 48
+  - name: PNS_strobe
+  type: 2
+  index: 49
+  - name: Prod_start
+  type: 2
+  index: 50
+  - name: D_LOAD_MONITOR
+  type: 3
+  index: 1
+  - name: D1/2AIR_SERVO
+  type: 4
+  index: 1
+  - name: RIVE_ANALOG
+  type: 4
+  index: 2
+  - name: *IMSTP
+  type: 20
+  index: 1
+  - name: *Hold
+  type: 20
+  index: 2
+  - name: *SFSPD
+  type: 20
+  index: 3
+  - name: Cycle_stop
+  type: 20
+  index: 4
+  - name: Fault_reset
+  type: 20
+  index: 5
+  - name: Start
+  type: 20
+  index: 6
+  - name: Home
+  type: 20
+  index: 7
+  - name: Enable
+  type: 20
+  index: 8
+  - name: RSR1/PNS1/STYLE1
+  type: 20
+  index: 9
+  - name: RSR2/PNS2/STYLE2
+  type: 20
+  index: 10
+  - name: RSR3/PNS3/STYLE3
+  type: 20
+  index: 11
+  - name: RSR4/PNS4/STYLE4
+  type: 20
+  index: 12
+  - name: RSR5/PNS5/STYLE5
+  type: 20
+  index: 13
+  - name: RSR6/PNS6/STYLE6
+  type: 20
+  index: 14
+  - name: RSR7/PNS7/STYLE7
+  type: 20
+  index: 15
+  - name: RSR8/PNS8/STYLE8
+  type: 20
+  index: 16
+  - name: PNS_strobe
+  type: 20
+  index: 17
+  - name: Prod_start
+  type: 20
+  index: 18
+  - name: Cmd_enabled
+  type: 21
+  index: 1
+  - name: System_ready
+  type: 21
+  index: 2
+  - name: Prg_running
+  type: 21
+  index: 3
+  - name: Prg_paused
+  type: 21
+  index: 4
+  - name: Motion_held
+  type: 21
+  index: 5
+  - name: Fault
+  type: 21
+  index: 6
+  - name: At_perch
+  type: 21
+  index: 7
+  - name: TP_enabled
+  type: 21
+  index: 8
+  - name: Batt_alarm
+  type: 21
+  index: 9
+  - name: Busy
+  type: 21
+  index: 10
+  - name: ACK1/SNO1
+  type: 21
+  index: 11
+  - name: ACK2/SNO2
+  type: 21
+  index: 12
+  - name: ACK3/SNO3
+  type: 21
+  index: 13
+  - name: ACK4/SNO4
+  type: 21
+  index: 14
+  - name: ACK5/SNO5
+  type: 21
+  index: 15
+  - name: ACK6/SNO6
+  type: 21
+  index: 16
+  - name: ACK7/SNO7
+  type: 21
+  index: 17
+  - name: ACK8/SNO8
+  type: 21
+  index: 18
+  - name: SNACK
+  type: 21
+  index: 19
+  - name: Reserved
+  type: 21
+  index: 20
+  - name: *IMSTP
+  type: 20
+  index: 1
+  - name: *Hold
+  type: 20
+  index: 2
+  - name: *SFSPD
+  type: 20
+  index: 3
+  - name: Cycle_stop
+  type: 20
+  index: 4
+  - name: Fault_reset
+  type: 20
+  index: 5
+  - name: Start
+  type: 20
+  index: 6
+  - name: Home
+  type: 20
+  index: 7
+  - name: Enable
+  type: 20
+  index: 8
+  - name: RSR1/PNS1/STYLE1
+  type: 20
+  index: 9
+  - name: RSR2/PNS2/STYLE2
+  type: 20
+  index: 10
+  - name: RSR3/PNS3/STYLE3
+  type: 20
+  index: 11
+  - name: RSR4/PNS4/STYLE4
+  type: 20
+  index: 12
+  - name: RSR5/PNS5/STYLE5
+  type: 20
+  index: 13
+  - name: RSR6/PNS6/STYLE6
+  type: 20
+  index: 14
+  - name: RSR7/PNS7/STYLE7
+  type: 20
+  index: 15
+  - name: RSR8/PNS8/STYLE8
+  type: 20
+  index: 16
+  - name: PNS_strobe
+  type: 20
+  index: 17
+  - name: Prod_start
+  type: 20
+  index: 18
+  - name: Cmd_enabled
+  type: 21
+  index: 1
+  - name: System_ready
+  type: 21
+  index: 2
+  - name: Prg_running
+  type: 21
+  index: 3
+  - name: Prg_paused
+  type: 21
+  index: 4
+  - name: Motion_held
+  type: 21
+  index: 5
+  - name: Fault
+  type: 21
+  index: 6
+  - name: At_perch
+  type: 21
+  index: 7
+  - name: TP_enabled
+  type: 21
+  index: 8
+  - name: Batt_alarm
+  type: 21
+  index: 9
+  - name: Busy
+  type: 21
+  index: 10
+  - name: ACK1/SNO1
+  type: 21
+  index: 11
+  - name: ACK2/SNO2
+  type: 21
+  index: 12
+  - name: ACK3/SNO3
+  type: 21
+  index: 13
+  - name: ACK4/SNO4
+  type: 21
+  index: 14
+  - name: ACK5/SNO5
+  type: 21
+  index: 15
+  - name: ACK6/SNO6
+  type: 21
+  index: 16
+  - name: ACK7/SNO7
+  type: 21
+  index: 17
+  - name: ACK8/SNO8
+  type: 21
+  index: 18
+  - name: SNACK
+  type: 21
+  index: 19
+  - name: Reserved
+  type: 21
+  index: 20
