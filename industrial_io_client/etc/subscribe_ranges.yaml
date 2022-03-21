@@ -26,3 +26,6 @@ subscribe_ranges:
   - type: 35  # Flags
     start: 1
     len: 20
+  - type: 29  # Flags
+    start: 1
+    len: 39
